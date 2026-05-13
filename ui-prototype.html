@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Hub - 冷淡风高级设计</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #141416;
+            --bg-tertiary: #1a1a1d;
+            --bg-hover: #242429;
+            --border-color: #2a2a2f;
+            --text-primary: #e5e5e7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-header {
+            padding: 28px 24px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .tool-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .tool-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 6px;
+            position: relative;
+        }
+
+        .tool-item:hover {
+            background: var(--bg-hover);
+            transform: translateX(4px);
+        }
+
+        .tool-item.active {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+        }
+
+        .tool-item.active::before {
+            content: '';
+            position: absolute;
+            left: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 28px;
+            background: var(--accent-gradient);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .tool-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .tool-item.active .tool-icon {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .tool-info {
+            flex: 1;
+        }
+
+        .tool-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .tool-status {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .favorite-btn {
+            opacity: 0;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            padding: 4px;
+        }
+
+        .tool-item:hover .favorite-btn {
+            opacity: 1;
+        }
+
+        .favorite-btn:hover,
+        .favorite-btn.active {
+            opacity: 1;
+            color: #fbbf24;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .settings-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .settings-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        .toolbar {
+            height: 56px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border-color);
+            margin: 0 8px;
+        }
+
+        .toolbar-center {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .current-tool {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+        }
+
+        .current-tool-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .current-tool-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .webview-container {
+            flex: 1;
+            position: relative;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .webview-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+
+        .placeholder-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .placeholder-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .placeholder-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 400px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .loading-skeleton {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+        }
+
+        .loading-skeleton.active {
+            display: block;
+        }
+
+        .skeleton-line {
+            height: 16px;
+            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-hover) 50%, var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        .demo-webview {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: none;
+            padding: 30px;
+        }
+
+        .demo-webview.active {
+            display: block;
+        }
+
+        .demo-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .demo-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .demo-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .demo-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .demo-message {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        .demo-message.user {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+        }
+
+        .demo-message-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <span class="logo-text">AI Chat Hub</span>
+                </div>
+                <div class="sidebar-title">AI 工具</div>
+            </div>
+            
+            <div class="tool-list">
+                <div class="tool-item active" data-tool="deepseek">
+                    <div class="tool-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="tool-info">
+                        <div class="tool-name">DeepSeek</div>
+                        <div class="tool-status">已登录</div>
+                    </div>
+                    <div class="favorite-btn active">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="tool-item" data-tool="qianwen">
+                    <div class="tool-icon">
+                        <i class="fas fa-sparkles"></i>
+                    </div>
+                    <div class="tool-info">
+                        <div class="tool-name">千问</div>
+                        <div class="tool-status">已登录</div>
+                    </div>
+                    <div class="favorite-btn active">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="tool-item" data-tool="doubao">
+                    <div class="tool-icon">
+                        <i class="fas fa-message-circle"></i>
+                    </div>
+                    <div class="tool-info">
+                        <div class="tool-name">豆包</div>
+                        <div class="tool-status">未登录</div>
+                    </div>
+                    <div class="favorite-btn">
+                        <i class="far fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="tool-item" data-tool="kimi">
+                    <div class="tool-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="tool-info">
+                        <div class="tool-name">Kimi</div>
+                        <div class="tool-status">已登录</div>
+                    </div>
+                    <div class="favorite-btn active">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="tool-item" data-tool="chatgpt">
+                    <div class="tool-icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <div class="tool-info">
+                        <div class="tool-name">ChatGPT</div>
+                        <div class="tool-status">已登录</div>
+                    </div>
+                    <div class="favorite-btn active">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="tool-item" data-tool="glm">
+                    <div class="tool-icon">
+                        <i class="fas fa-hexagon"></i>
+                    </div>
+                    <div class="tool-info">
+                        <div class="tool-name">GLM</div>
+                        <div class="tool-status">未登录</div>
+                    </div>
+                    <div class="favorite-btn">
+                        <i class="far fa-star"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="settings-btn">
+                    <i class="fas fa-cog"></i>
+                    <span>设置</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button class="nav-btn" title="后退">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="nav-btn" title="前进">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <div class="divider"></div>
+                    <button class="nav-btn" title="刷新">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-center">
+                    <div class="current-tool">
+                        <div class="current-tool-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <span class="current-tool-name">DeepSeek</span>
+                    </div>
+                </div>
+                
+                <div class="toolbar-right">
+                    <button class="action-btn" title="在浏览器中打开">
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
+                    <button class="action-btn" title="全屏">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="webview-container">
+                <div class="webview-placeholder" id="placeholder">
+                    <div class="placeholder-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="placeholder-title">欢迎使用 AI Chat Hub</div>
+                    <div class="placeholder-subtitle">
+                        从左侧选择一个 AI 工具开始使用，登录状态将自动保存
+                    </div>
+                </div>
+                
+                <div class="loading-skeleton" id="skeleton">
+                    <div class="skeleton-line" style="width: 30%;"></div>
+                    <div class="skeleton-line" style="width: 85%;"></div>
+                    <div class="skeleton-line" style="width: 70%;"></div>
+                    <div class="skeleton-line" style="width: 90%;"></div>
+                    <div class="skeleton-line" style="width: 60%;"></div>
+                    <div style="height: 24px;"></div>
+                    <div class="skeleton-line" style="width: 40%;"></div>
+                    <div class="skeleton-line" style="width: 75%;"></div>
+                    <div class="skeleton-line" style="width: 80%;"></div>
+                </div>
+                
+                <div class="demo-webview active" id="demo-webview">
+                    <div class="demo-header">
+                        <div class="demo-avatar">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="demo-info">
+                            <h3>DeepSeek</h3>
+                            <p>https://chat.deepseek.com</p>
+                        </div>
+                    </div>
+                    <div class="demo-message user">
+                        <div class="demo-message-label">用户</div>
+                        你好，帮我写一段 Python 代码
+                    </div>
+                    <div class="demo-message">
+                        <div class="demo-message-label">DeepSeek</div>
+                        您好！我很乐意帮您编写 Python 代码。请告诉我您需要实现什么功能，我会为您提供相应的代码示例和详细的解释...
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const tools = {
+            deepseek: { name: 'DeepSeek', icon: 'fa-brain' },
+            qianwen: { name: '千问', icon: 'fa-sparkles' },
+            doubao: { name: '豆包', icon: 'fa-message-circle' },
+            kimi: { name: 'Kimi', icon: 'fa-bolt' },
+            chatgpt: { name: 'ChatGPT', icon: 'fa-comment' },
+            glm: { name: 'GLM', icon: 'fa-hexagon' }
+        };
+
+        document.querySelectorAll('.tool-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('.favorite-btn')) {
+                    const btn = e.target.closest('.favorite-btn');
+                    btn.classList.toggle('active');
+                    const icon = btn.querySelector('i');
+                    icon.className = btn.classList.contains('active') ? 'fas fa-star' : 'far fa-star';
+                    return;
+                }
+
+                document.querySelectorAll('.tool-item').forEach(t => t.classList.remove('active'));
+                item.classList.add('active');
+                
+                const toolId = item.dataset.tool;
+                const tool = tools[toolId];
+                
+                const currentToolIcon = document.querySelector('.current-tool-icon i');
+                const currentToolName = document.querySelector('.current-tool-name');
+                currentToolIcon.className = `fas ${tool.icon}`;
+                currentToolName.textContent = tool.name;
+                
+                const placeholder = document.getElementById('placeholder');
+                const skeleton = document.getElementById('skeleton');
+                const demoWebview = document.getElementById('demo-webview');
+                
+                placeholder.style.display = 'none';
+                demoWebview.classList.remove('active');
+                skeleton.classList.add('active');
+                
+                setTimeout(() => {
+                    skeleton.classList.remove('active');
+                    demoWebview.classList.add('active');
+                    demoWebview.querySelector('.demo-avatar i').className = `fas ${tool.icon}`;
+                    demoWebview.querySelector('.demo-header h3').textContent = tool.name;
+                }, 800);
+            });
+        });
+    </script>
+</body>
+</html>

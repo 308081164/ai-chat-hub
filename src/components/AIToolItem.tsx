@@ -16,7 +16,19 @@ export const AIToolItem: React.FC<AIToolItemProps> = ({
   onClick,
   onToggleFavorite,
 }) => {
-  const IconComponent = (Icons as any)[tool.icon.charAt(0).toUpperCase() + tool.icon.slice(1)] || Icons.MessageSquare
+  const getIconComponent = () => {
+    if (tool.icon === 'cursor') {
+      return (
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+          <path d="M4 4l16 6-6 2-2 6-4-8 2-2-6-4z"/>
+        </svg>
+      )
+    }
+    const IconName = tool.icon.charAt(0).toUpperCase() + tool.icon.slice(1) as keyof typeof Icons
+    return (Icons[IconName] || Icons.MessageSquare)
+  }
+  
+  const IconComponent = getIconComponent()
 
   return (
     <div

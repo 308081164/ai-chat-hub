@@ -25,4 +25,5 @@ export const DEFAULT_TOOLS: AITool[] = [
   { id: 'kimi', name: 'Kimi', url: 'https://kimi.moonshot.cn', icon: 'zap', isFavorite: true, order: 3 },
   { id: 'chatgpt', name: 'ChatGPT', url: 'https://chat.openai.com', icon: 'message-square', isFavorite: true, order: 4 },
   { id: 'glm', name: 'GLM', url: 'https://chatglm.cn', icon: 'hexagon', isFavorite: true, order: 5 },
+  { id: 'cursor', name: 'Cursor', url: 'cursor-agent-board', icon: 'cursor', isFavorite: true, order: 6 },
 ]

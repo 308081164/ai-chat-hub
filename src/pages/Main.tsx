@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Sidebar } from '../components/Sidebar'
 import { Toolbar } from '../components/Toolbar'
 import { WebViewContainer } from '../components/WebViewContainer'
@@ -11,7 +11,7 @@ export const Main = () => {
   const [goBackFn, setGoBackFn] = useState<(() => void) | null>(null)
   const [goForwardFn, setGoForwardFn] = useState<(() => void) | null>(null)
   const [refreshFn, setRefreshFn] = useState<(() => void) | null>(null)
-  const currentToolId = useAppStore((state: { currentToolId: string | null }) => state.currentToolId)
+  const currentToolId = useAppStore((state) => state.currentToolId)
 
   const isCursorBoard = currentToolId === 'cursor'
 

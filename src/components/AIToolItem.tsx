@@ -1,7 +1,5 @@
-import React from 'react'
 import { AITool } from '../types'
-import { Star } from 'lucide-react'
-import * as Icons from 'lucide-react'
+import { Star, MessageSquare, Brain, Sparkles, MessageCircle, Zap, Hexagon } from 'lucide-react'
 
 interface AIToolItemProps {
   tool: AITool
@@ -10,25 +8,22 @@ interface AIToolItemProps {
   onToggleFavorite: () => void
 }
 
-export const AIToolItem: React.FC<AIToolItemProps> = ({
+const iconMap: Record<string, React.ElementType> = {
+  brain: Brain,
+  sparkles: Sparkles,
+  'message-circle': MessageCircle,
+  zap: Zap,
+  'message-square': MessageSquare,
+  hexagon: Hexagon,
+}
+
+export const AIToolItem = ({
   tool,
   isActive,
   onClick,
   onToggleFavorite,
-}) => {
-  const getIconComponent = () => {
-    if (tool.icon === 'cursor') {
-      return (
-        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-          <path d="M4 4l16 6-6 2-2 6-4-8 2-2-6-4z"/>
-        </svg>
-      )
-    }
-    const IconName = tool.icon.charAt(0).toUpperCase() + tool.icon.slice(1) as keyof typeof Icons
-    return (Icons[IconName] || Icons.MessageSquare)
-  }
-  
-  const IconComponent = getIconComponent()
+}: AIToolItemProps) => {
+  const IconComponent = iconMap[tool.icon] || MessageSquare
 
   return (
     <div
@@ -52,7 +47,13 @@ export const AIToolItem: React.FC<AIToolItemProps> = ({
           : 'bg-bg-tertiary text-text-secondary'
         }
       `}>
-        <IconComponent size={20} />
+        {tool.icon === 'cursor' ? (
+          <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+            <path d="M4 4l16 6-6 2-2 6-4-8 2-2-6-4z"/>
+          </svg>
+        ) : (
+          <IconComponent size={20} />
+        )}
       </div>
       
       <div className="flex-1 min-w-0">

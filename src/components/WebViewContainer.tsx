@@ -5,21 +5,21 @@ import { MessageSquare, Loader2 } from 'lucide-react'
 interface WebViewContainerProps {
   onCanGoBackChange: (canGoBack: boolean) => void
   onCanGoForwardChange: (canGoForward: boolean) => void
-  onGoBack: () => void
-  onGoForward: () => void
-  onRefresh: () => void
+  onGoBack: (fn: () => void) => void
+  onGoForward: (fn: () => void) => void
+  onRefresh: (fn: () => void) => void
 }
 
-export const WebViewContainer: React.FC<WebViewContainerProps> = ({
+export const WebViewContainer = ({
   onCanGoBackChange,
   onCanGoForwardChange,
   onGoBack,
   onGoForward,
   onRefresh,
-}) => {
+}: WebViewContainerProps) => {
   const { currentToolId, tools } = useAppStore()
   const currentTool = tools.find(t => t.id === currentToolId)
-  const webviewRef = useRef<Electron.WebviewTag>(null)
+  const webviewRef = useRef<HTMLWebViewElement>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -29,8 +29,8 @@ export const WebViewContainer: React.FC<WebViewContainerProps> = ({
     const handleLoadStart = () => setIsLoading(true)
     const handleLoadStop = () => {
       setIsLoading(false)
-      onCanGoBackChange(webview.canGoBack())
-      onCanGoForwardChange(webview.canGoForward())
+      onCanGoBackChange((webview as any).canGoBack?.() || false)
+      onCanGoForwardChange((webview as any).canGoForward?.() || false)
     }
 
     webview.addEventListener('did-start-loading', handleLoadStart)
@@ -40,20 +40,28 @@ export const WebViewContainer: React.FC<WebViewContainerProps> = ({
       webview.removeEventListener('did-start-loading', handleLoadStart)
       webview.removeEventListener('did-stop-loading', handleLoadStop)
     }
-  }, [currentToolId])
+  }, [currentToolId, onCanGoBackChange, onCanGoForwardChange])
 
   useEffect(() => {
     const webview = webviewRef.current
     if (!webview) return
 
-    const goBack = () => webview.canGoBack() && webview.goBack()
-    const goForward = () => webview.canGoForward() && webview.goForward()
-    const refresh = () => webview.reload()
+    const goBack = () => {
+      if ((webview as any).canGoBack?.()) {
+        (webview as any).goBack?.()
+      }
+    }
+    const goForward = () => {
+      if ((webview as any).canGoForward?.()) {
+        (webview as any).goForward?.()
+      }
+    }
+    const refresh = () => (webview as any).reload?.()
 
-    onGoBack = goBack
-    onGoForward = goForward
-    onRefresh = refresh
-  }, [])
+    onGoBack(goBack)
+    onGoForward(goForward)
+    onRefresh(refresh)
+  }, [onGoBack, onGoForward, onRefresh])
 
   if (!currentTool) {
     return (

@@ -1,6 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { RefreshCw, ExternalLink, X, Play, Square, Send, Settings, AlertCircle, CheckCircle, Loader2, Clock, XCircle, AlertTriangle } from 'lucide-react'
+import { RefreshCw, ExternalLink, X, Square, Send, Settings, AlertCircle, CheckCircle, Loader2, Clock, XCircle, AlertTriangle } from 'lucide-react'
 import { CursorAgent, CursorRun, AgentWithRun } from '../types/cursor-cloud'
+
+interface CursorCloudAPI {
+  listAgents: () => Promise<unknown>
+  getAgent: (agentId: string) => Promise<unknown>
+  listRuns: (agentId: string) => Promise<unknown>
+  getRun: (agentId: string, runId: string) => Promise<unknown>
+  cancelRun: (agentId: string, runId: string) => Promise<unknown>
+  createRun: (agentId: string, prompt: string) => Promise<unknown>
+  validateApiKey: (apiKey: string) => Promise<{ valid: boolean; error?: string }>
+  saveApiKey: (apiKey: string) => Promise<void>
+  getApiKeyStatus: () => Promise<{ configured: boolean }>
+  openExternal: (url: string) => Promise<void>
+}
+
+declare global {
+  interface Window {
+    cursorCloud: CursorCloudAPI
+  }
+}
 
 type RunStatus = 'pending' | 'running' | 'succeeded' | 'failed' | 'cancelled'
 
@@ -12,7 +31,7 @@ const statusConfig: Record<RunStatus, { icon: React.ReactNode; color: string; la
   cancelled: { icon: <Square size={14} />, color: 'text-gray-500', label: '已取消' },
 }
 
-export const AgentBoard: React.FC = () => {
+export const AgentBoard = () => {
   const [agents, setAgents] = useState<AgentWithRun[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -23,7 +42,6 @@ export const AgentBoard: React.FC = () => {
   const [selectedAgent, setSelectedAgent] = useState<AgentWithRun | null>(null)
   const [prompt, setPrompt] = useState('')
   const [sending, setSending] = useState(false)
-  const [pollingInterval, setPollingInterval] = useState<number | null>(null)
 
   const checkApiKey = useCallback(async () => {
     try {
@@ -80,7 +98,6 @@ export const AgentBoard: React.FC = () => {
     if (isConfigured) {
       fetchAgents()
       const interval = window.setInterval(fetchAgents, 30000)
-      setPollingInterval(interval)
       return () => {
         if (interval) clearInterval(interval)
       }
@@ -177,7 +194,7 @@ export const AgentBoard: React.FC = () => {
               <input
                 type="password"
                 value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiKey(e.target.value)}
                 placeholder="请输入 Cursor API Key"
                 className="w-full px-4 py-3 bg-bg-primary border border-border-color rounded-xl text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               />
@@ -271,7 +288,7 @@ export const AgentBoard: React.FC = () => {
             </div>
           ) : (
             <div className="grid gap-4">
-              {agents.map((agent) => (
+              {agents.map((agent: AgentWithRun) => (
                 <div
                   key={agent.id}
                   className="bg-bg-secondary border border-border-color rounded-2xl p-6 hover:border-blue-500/30 transition-all cursor-pointer"
@@ -300,7 +317,7 @@ export const AgentBoard: React.FC = () => {
                       <div className="flex items-center gap-2">
                         {agent.latestRun.status === 'running' && (
                           <button
-                            onClick={(e) => {
+                            onClick={(e: React.MouseEvent) => {
                               e.stopPropagation()
                               handleCancelRun(agent.id, agent.latestRun!.id)
                             }}
@@ -312,7 +329,7 @@ export const AgentBoard: React.FC = () => {
                         )}
                         {agent.url && (
                           <button
-                            onClick={(e) => {
+                            onClick={(e: React.MouseEvent) => {
                               e.stopPropagation()
                               handleOpenInBrowser(agent.url!)
                             }}
@@ -331,7 +348,7 @@ export const AgentBoard: React.FC = () => {
                       <span className="text-xs text-text-muted">暂无运行记录</span>
                       {agent.url && (
                         <button
-                          onClick={(e) => {
+                          onClick={(e: React.MouseEvent) => {
                             e.stopPropagation()
                             handleOpenInBrowser(agent.url!)
                           }}
@@ -404,7 +421,7 @@ export const AgentBoard: React.FC = () => {
               <div className="space-y-3">
                 <textarea
                   value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
                   placeholder="输入您的指令..."
                   className="w-full h-32 px-4 py-3 bg-bg-primary border border-border-color rounded-xl text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
                 />

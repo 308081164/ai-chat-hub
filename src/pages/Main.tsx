@@ -5,13 +5,13 @@ import { WebViewContainer } from '../components/WebViewContainer'
 import { AgentBoard } from './AgentBoard'
 import { useAppStore } from '../store/useAppStore'
 
-export const Main: React.FC = () => {
+export const Main = () => {
   const [canGoBack, setCanGoBack] = useState(false)
   const [canGoForward, setCanGoForward] = useState(false)
   const [goBackFn, setGoBackFn] = useState<(() => void) | null>(null)
   const [goForwardFn, setGoForwardFn] = useState<(() => void) | null>(null)
   const [refreshFn, setRefreshFn] = useState<(() => void) | null>(null)
-  const currentToolId = useAppStore((state) => state.currentToolId)
+  const currentToolId = useAppStore((state: { currentToolId: string | null }) => state.currentToolId)
 
   const isCursorBoard = currentToolId === 'cursor'
 
@@ -46,9 +46,9 @@ export const Main: React.FC = () => {
           <WebViewContainer
             onCanGoBackChange={setCanGoBack}
             onCanGoForwardChange={setCanGoForward}
-            onGoBack={(fn) => setGoBackFn(() => fn)}
-            onGoForward={(fn) => setGoForwardFn(() => fn)}
-            onRefresh={(fn) => setRefreshFn(() => fn)}
+            onGoBack={setGoBackFn}
+            onGoForward={setGoForwardFn}
+            onRefresh={setRefreshFn}
           />
         )}
       </div>

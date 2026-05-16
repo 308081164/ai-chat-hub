@@ -2,6 +2,7 @@
   "name": "ai-chat-hub",
   "version": "1.0.0",
   "description": "AI Chat Hub - 聚合多个AI聊天工具的桌面应用",
+  "author": "Your Name <your.email@example.com>",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
@@ -37,6 +38,7 @@
     "directories": {
       "output": "release"
     },
+    "publish": null,
     "win": {
       "target": ["nsis", "portable"]
     }

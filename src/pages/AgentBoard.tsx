@@ -194,7 +194,7 @@ export const AgentBoard = () => {
               <input
                 type="password"
                 value={apiKey}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiKey(e.target.value)}
+                onChange={(e) => setApiKey(e.target.value)}
                 placeholder="请输入 Cursor API Key"
                 className="w-full px-4 py-3 bg-bg-primary border border-border-color rounded-xl text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               />
@@ -288,7 +288,7 @@ export const AgentBoard = () => {
             </div>
           ) : (
             <div className="grid gap-4">
-              {agents.map((agent: AgentWithRun) => (
+              {agents.map((agent) => (
                 <div
                   key={agent.id}
                   className="bg-bg-secondary border border-border-color rounded-2xl p-6 hover:border-blue-500/30 transition-all cursor-pointer"
@@ -317,7 +317,7 @@ export const AgentBoard = () => {
                       <div className="flex items-center gap-2">
                         {agent.latestRun.status === 'running' && (
                           <button
-                            onClick={(e: React.MouseEvent) => {
+                            onClick={(e) => {
                               e.stopPropagation()
                               handleCancelRun(agent.id, agent.latestRun!.id)
                             }}
@@ -329,7 +329,7 @@ export const AgentBoard = () => {
                         )}
                         {agent.url && (
                           <button
-                            onClick={(e: React.MouseEvent) => {
+                            onClick={(e) => {
                               e.stopPropagation()
                               handleOpenInBrowser(agent.url!)
                             }}
@@ -348,7 +348,7 @@ export const AgentBoard = () => {
                       <span className="text-xs text-text-muted">暂无运行记录</span>
                       {agent.url && (
                         <button
-                          onClick={(e: React.MouseEvent) => {
+                          onClick={(e) => {
                             e.stopPropagation()
                             handleOpenInBrowser(agent.url!)
                           }}
@@ -421,7 +421,7 @@ export const AgentBoard = () => {
               <div className="space-y-3">
                 <textarea
                   value={prompt}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
+                  onChange={(e) => setPrompt(e.target.value)}
                   placeholder="输入您的指令..."
                   className="w-full h-32 px-4 py-3 bg-bg-primary border border-border-color rounded-xl text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
                 />

@@ -1,5 +1,6 @@
 import { AITool } from '../types'
 import { Star, MessageSquare, Brain, Sparkles, MessageCircle, Zap, Hexagon } from 'lucide-react'
+import React from 'react'
 
 interface AIToolItemProps {
   tool: AITool
@@ -49,7 +50,7 @@ export const AIToolItem = ({
       `}>
         {tool.icon === 'cursor' ? (
           <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-            <path d="M4 4l16 6-6 2-2 6-4-8 2-2-6-4z"/>
+            <path d="M4 4l16 6-6 2-2 6-4-8 2-2-6-4z" />
           </svg>
         ) : (
           <IconComponent size={20} />
@@ -71,6 +72,7 @@ export const AIToolItem = ({
           p-1.5 rounded-lg transition-all opacity-0 group-hover:opacity-100
           ${tool.isFavorite ? 'text-yellow-400 opacity-100' : 'text-text-muted hover:text-text-secondary'}
         `}
+        title={tool.isFavorite ? "取消收藏" : "添加收藏"}
       >
         <Star size={16} fill={tool.isFavorite ? 'currentColor' : 'none'} />
       </button>

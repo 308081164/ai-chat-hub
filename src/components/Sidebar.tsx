@@ -22,7 +22,7 @@ export const Sidebar: React.FC = () => {
         </div>
         {!sidebarCollapsed && (
           <div className="mt-4 text-xs text-text-muted font-semibold uppercase tracking-wider">
-            AI Tools
+            AI 工具
           </div>
         )}
       </div>
@@ -42,13 +42,14 @@ export const Sidebar: React.FC = () => {
       <div className="p-4 border-t border-border-color">
         <button className="w-full flex items-center gap-3 p-3 rounded-xl text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-all">
           <Settings size={20} />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Settings</span>}
+          {!sidebarCollapsed && <span className="text-sm font-medium">设置</span>}
         </button>
       </div>
       
       <button
         onClick={toggleSidebar}
         className="absolute top-6 right-[-14px] w-7 h-7 bg-bg-secondary border border-border-color rounded-full flex items-center justify-center hover:bg-bg-hover transition-all z-10"
+        title={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
       >
         {sidebarCollapsed ? <Menu size={14} /> : <X size={14} />}
       </button>

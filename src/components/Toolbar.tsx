@@ -41,6 +41,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               ? 'text-text-secondary hover:bg-bg-hover hover:text-text-primary' 
               : 'text-text-muted cursor-not-allowed opacity-40'
           }`}
+          title="后退"
         >
           <ArrowLeft size={18} />
         </button>
@@ -52,6 +53,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               ? 'text-text-secondary hover:bg-bg-hover hover:text-text-primary' 
               : 'text-text-muted cursor-not-allowed opacity-40'
           }`}
+          title="前进"
         >
           <ArrowRight size={18} />
         </button>
@@ -59,6 +61,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <button
           onClick={onRefresh}
           className="w-9 h-9 rounded-lg flex items-center justify-center text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-all"
+          title="刷新"
         >
           <RotateCw size={18} />
         </button>
@@ -77,13 +80,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <button
           onClick={handleOpenExternal}
           className="w-9 h-9 rounded-lg flex items-center justify-center text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-all"
-          title="Open in browser"
+          title="在浏览器中打开"
         >
           <ExternalLink size={18} />
         </button>
         <button
           className="w-9 h-9 rounded-lg flex items-center justify-center text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-all"
-          title="Fullscreen"
+          title="全屏"
         >
           <Maximize2 size={18} />
         </button>

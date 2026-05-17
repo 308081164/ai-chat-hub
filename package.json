@@ -41,13 +41,27 @@
     },
     "publish": null,
     "win": {
-      "target": ["nsis", "portable"]
+      "target": ["nsis", "portable"],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AI Chat Hub",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "deleteAppDataOnUninstall": false
     },
     "mac": {
-      "target": ["dmg", "zip"]
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.productivity"
     },
     "linux": {
-      "target": ["AppImage", "snap"]
+      "target": ["AppImage", "snap"],
+      "category": "Utility"
     }
   }
 }

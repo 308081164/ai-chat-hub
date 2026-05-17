@@ -38,7 +38,13 @@
     "directories": {
       "output": "release"
     },
-    "publish": null,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "308081164",
+        "repo": "ai-chat-hub"
+      }
+    ],
     "win": {
       "target": ["nsis", "portable"]
     }

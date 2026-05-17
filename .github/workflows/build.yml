@@ -7,6 +7,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
@@ -45,6 +48,7 @@ jobs:
           CI: true
           ELECTRON_CACHE: ${{ runner.temp }}/electron-cache
           ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -52,3 +56,38 @@ jobs:
           name: ${{ matrix.artifact_name }}-exe
           path: release/**/*
           retention-days: 7
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display structure of downloaded files
+        run: ls -laR artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/**/*
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          body: |
+            ## 最新构建
+            
+            此发布包含最新的构建版本。
+            
+            ### 平台
+            - Windows (.exe)
+            - Linux (.AppImage)
+            - macOS (.dmg, .zip)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
